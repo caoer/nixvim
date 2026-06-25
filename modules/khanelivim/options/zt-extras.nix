@@ -585,13 +585,6 @@ lib.mkIf isZt {
     -- ZT Profile: Custom keymaps (Lua functions)
     -- ====================================================================
 
-    -- Copy file path (overrides yanky's <leader>yp → yank history picker)
-    vim.keymap.set("n", "<leader>yp", function()
-      local path = vim.fn.expand("%:p")
-      vim.fn.setreg("+", path)
-      vim.notify("Copied: " .. path, vim.log.levels.INFO)
-    end, { desc = "Copy file path" })
-
     -- Save file with Snacks notification
     vim.keymap.set("n", "<leader>ww", function()
       vim.cmd("w")
