@@ -243,7 +243,9 @@ let
       showkeys.enable = mkProfileDisable;
     };
 
-    lsp.servers.copilot.enable = mkProfileDisable;
+    # lsp.nix sets copilot.enable at priority 100 (!copilot-lua.enable);
+    # mkOverride 900 loses — use mkForce (50) to actually disable it.
+    lsp.servers.copilot.enable = lib.mkForce false;
   };
 
   standardProfile = recursiveUpdate basicProfile {
