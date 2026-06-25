@@ -211,14 +211,11 @@ let
   # git without octo, no screenshots.
   ztProfile = recursiveUpdate standardProfile {
     khanelivim = {
-      ai.plugins = lib.mkDefault [ "claudecode" ];
+      ai.plugins = mkProfileOverride [ "claudecode" ];
 
-      integrations.accountBacked = {
-        ai.enable = lib.mkDefault false;
-        timeTracking.enable = lib.mkDefault false;
-      };
+      integrations.accountBacked.timeTracking.enable = mkProfileOverride false;
 
-      git.integrations = lib.mkDefault [
+      git.integrations = mkProfileOverride [
         "gitsigns"
         "git-conflict"
         "git-worktree"
@@ -229,14 +226,14 @@ let
         "snacks-lazygit"
       ];
 
-      jj.integrations = lib.mkDefault [ ];
+      jj.integrations = mkProfileOverride [ ];
 
-      lsp = mkDefaultAttrs {
+      lsp = lib.mapAttrs (_: mkProfileOverride) {
         java = null;
         csharp = null;
       };
 
-      utilities.screenshots = lib.mkDefault [ ];
+      utilities.screenshots = mkProfileOverride [ ];
     };
 
     plugins = {
