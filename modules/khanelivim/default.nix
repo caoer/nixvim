@@ -18,5 +18,6 @@
     ./options/text.nix
     ./options/ui.nix
     ./options/utilities.nix
+    ./options/zt-extras.nix
   ];
 }

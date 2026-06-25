@@ -234,6 +234,9 @@ let
       };
 
       utilities.screenshots = mkProfileOverride [ ];
+
+      # Use diffview instead of codediff for richer diff UI
+      git.diffViewer = mkProfileOverride "diffview";
     };
 
     plugins = {
