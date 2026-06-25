@@ -126,6 +126,13 @@ let
     mode = keymap.mode or "n";
     inherit (keymap.options) desc;
   }) yankyKeymaps;
+
+  yankyPickerLazyKey = lib.optional config.plugins.snacks.enable {
+    __unkeyed-1 = "<leader>yp";
+    __unkeyed-2 = "<CMD>lua Snacks.picker.yanky()<CR>";
+    mode = "n";
+    desc = "Yank history";
+  };
 in
 {
   plugins = {
@@ -136,7 +143,9 @@ in
 
       lazyLoad = {
         settings = {
-          keys = lib.mkIf config.plugins.lz-n.enable yankyLazyKeys;
+          keys = lib.mkIf config.plugins.lz-n.enable (
+            yankyLazyKeys ++ yankyPickerLazyKey
+          );
         };
       };
 
