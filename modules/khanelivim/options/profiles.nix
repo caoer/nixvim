@@ -206,6 +206,49 @@ let
     };
   };
 
+  # zt: standard profile trimmed for ZT's workflow.
+  # claudecode-only AI, no Java/C#/JJ/wakatime/copilot/firenvim/leetcode,
+  # git without octo, no screenshots.
+  ztProfile = recursiveUpdate standardProfile {
+    khanelivim = {
+      ai.plugins = lib.mkDefault [ "claudecode" ];
+
+      integrations.accountBacked = {
+        ai.enable = lib.mkDefault false;
+        timeTracking.enable = lib.mkDefault false;
+      };
+
+      git.integrations = lib.mkDefault [
+        "gitsigns"
+        "git-conflict"
+        "git-worktree"
+        "hunk"
+        "native-difftool"
+        "snacks-gh"
+        "snacks-gitbrowse"
+        "snacks-lazygit"
+      ];
+
+      jj.integrations = lib.mkDefault [ ];
+
+      lsp = mkDefaultAttrs {
+        java = null;
+        csharp = null;
+      };
+
+      utilities.screenshots = lib.mkDefault [ ];
+    };
+
+    plugins = {
+      easy-dotnet.enable = mkProfileDisable;
+      firenvim.enable = mkProfileDisable;
+      leetcode.enable = mkProfileDisable;
+      showkeys.enable = mkProfileDisable;
+    };
+
+    lsp.servers.copilot.enable = mkProfileDisable;
+  };
+
   standardProfile = recursiveUpdate basicProfile {
     khanelivim = {
       ai = mkDefaultAttrs {
@@ -319,6 +362,7 @@ in
       "minimal"
       "basic"
       "standard"
+      "zt"
       "full"
       "debug"
     ];
@@ -332,6 +376,8 @@ in
         statusline, key hints, file, and git basics.
       - standard: conservative daily workstation profile with current
         workflow-rich defaults preserved.
+      - zt: standard trimmed for ZT's workflow — claudecode-only AI, no
+        Java/C#/JJ/wakatime/copilot, git without octo.
       - full: lab profile with every optional and overlapping workflow enabled.
         Applies no overrides: every khanelivim option keeps its declared
         default, which is the everything-enabled setup the other profiles trim
@@ -349,6 +395,7 @@ in
     ))
     (lib.mkIf (cfg.profile == "basic") basicProfile)
     (lib.mkIf (cfg.profile == "standard") standardProfile)
+    (lib.mkIf (cfg.profile == "zt") ztProfile)
 
     # Full: intentionally no block. The declared option defaults ARE the full
     # configuration; the other profiles exist to pare it down.
