@@ -9,7 +9,11 @@
       lazyLoad = {
         settings = {
           ft = "diff";
-          cmd = "DiffviewOpen";
+          cmd = [
+            "DiffviewOpen"
+            "DiffviewFileHistory"
+            "DiffviewClose"
+          ];
         };
       };
 
