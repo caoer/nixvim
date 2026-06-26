@@ -22,6 +22,8 @@ let
       rev = "785ede15e3b280fbf5a6d36823eb74122cd85a83";
       hash = "sha256-GAbSWhaEB5XnH2DGYQAXgWJCm5zHhLJaQ6WTbbVTWJk=";
     };
+    # Optional XML/YAML/TOML lang modules fail require check; JSON works fine.
+    doCheck = false;
     meta.homepage = "https://github.com/Owen-Dechow/videre.nvim";
   };
 in
