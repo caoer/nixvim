@@ -773,13 +773,16 @@ lib.mkIf isZt {
     -- Lazy-load nvim-sops on FileType yaml/json
     vim.api.nvim_create_autocmd("FileType", {
       pattern = { "yaml", "json" },
-      once = true,
       callback = function()
+        if vim.g._sops_loaded then return end
+        vim.g._sops_loaded = true
         vim.cmd("packadd nvim-sops")
         require("sops").setup({
           auto_decrypt = true,
           auto_encrypt = true,
         })
+        -- Re-trigger BufReadPost so sops processes the current buffer
+        vim.cmd("doautocmd BufReadPost " .. vim.fn.fnameescape(vim.fn.expand("%")))
       end,
     })
 
