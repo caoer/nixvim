@@ -770,9 +770,9 @@ lib.mkIf isZt {
       end,
     })
 
-    -- Lazy-load nvim-sops on FileType yaml/json
-    vim.api.nvim_create_autocmd("FileType", {
-      pattern = { "yaml", "json" },
+    -- Lazy-load nvim-sops on *.sops.yaml / *.sops.json only
+    vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+      pattern = { "*.sops.yaml", "*.sops.json" },
       callback = function()
         if vim.g._sops_loaded then return end
         vim.g._sops_loaded = true
@@ -781,7 +781,7 @@ lib.mkIf isZt {
           auto_decrypt = true,
           auto_encrypt = true,
         })
-        -- Re-trigger BufReadPost so sops processes the current buffer
+        -- Re-trigger for current buffer (BufReadPost already fired)
         vim.cmd("doautocmd BufReadPost " .. vim.fn.fnameescape(vim.fn.expand("%")))
       end,
     })
