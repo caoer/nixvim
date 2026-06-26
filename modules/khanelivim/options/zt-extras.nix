@@ -340,11 +340,20 @@ lib.mkIf isZt {
     }
   ];
 
-  # ── Extra plugins (not in khanelivim's module system) ──────────────────
+  # ── Extra plugins (lazy-loaded via optional + packadd on demand) ───────
   extraPlugins = [
-    pkgs.vimPlugins.hurl-nvim
-    pkgs.vimPlugins.nvim-sops
-    videre-nvim
+    {
+      plugin = pkgs.vimPlugins.hurl-nvim;
+      optional = true;
+    }
+    {
+      plugin = pkgs.vimPlugins.nvim-sops;
+      optional = true;
+    }
+    {
+      plugin = videre-nvim;
+      optional = true;
+    }
   ];
 
   # ── Spell dictionary ───────────────────────────────────────────────────
@@ -675,11 +684,13 @@ lib.mkIf isZt {
 
       vim.api.nvim_create_autocmd("VimEnter", {
         callback = function()
-          local parser_dir = vim.fn.stdpath("data") .. "/site/parser"
-          local result = vim.fn.system("codesign --verify " .. parser_dir .. "/lua.so 2>&1")
-          if vim.v.shell_error ~= 0 then
-            sign_treesitter_parsers()
-          end
+          vim.schedule(function()
+            local parser_dir = vim.fn.stdpath("data") .. "/site/parser"
+            local result = vim.fn.system("codesign --verify " .. parser_dir .. "/lua.so 2>&1")
+            if vim.v.shell_error ~= 0 then
+              sign_treesitter_parsers()
+            end
+          end)
         end,
       })
     end
@@ -745,23 +756,38 @@ lib.mkIf isZt {
       end,
     })
 
-    -- Hurl plugin setup
-    local hurl_ok, _ = pcall(require, "hurl")
-    if hurl_ok then
-      require("hurl").setup({
-        mode = "split",
-        show_notification = false,
-        formatters = { json = { "jq" } },
-      })
-    end
+    -- Lazy-load hurl.nvim on FileType hurl
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "hurl",
+      once = true,
+      callback = function()
+        vim.cmd("packadd hurl-nvim")
+        require("hurl").setup({
+          mode = "split",
+          show_notification = false,
+          formatters = { json = { "jq" } },
+        })
+      end,
+    })
 
-    -- SOPS plugin setup
-    local sops_ok, _ = pcall(require, "sops")
-    if sops_ok then
-      require("sops").setup({
-        auto_decrypt = true,
-        auto_encrypt = true,
-      })
-    end
+    -- Lazy-load nvim-sops on FileType yaml/json
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = { "yaml", "json" },
+      once = true,
+      callback = function()
+        vim.cmd("packadd nvim-sops")
+        require("sops").setup({
+          auto_decrypt = true,
+          auto_encrypt = true,
+        })
+      end,
+    })
+
+    -- Lazy-load videre on :Videre command
+    vim.api.nvim_create_user_command("Videre", function(opts)
+      vim.cmd("packadd videre-nvim")
+      vim.cmd("delcommand Videre") -- remove stub, real one takes over
+      vim.cmd("Videre " .. (opts.args or ""))
+    end, { nargs = "?", desc = "JSON Graph Explorer (lazy)" })
   '';
 }
