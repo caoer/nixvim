@@ -11,7 +11,7 @@
     ];
 
     settings = {
-      colorcolumn = "80";
+      colorcolumn = "120";
       disabled_filetypes = [
         "dashboard"
         "snacks_dashboard"

@@ -73,10 +73,10 @@ lib.mkIf isZt {
       pattern = [ "*.md" ];
       callback.__raw = "function() vim.diagnostic.enable(false, { bufnr = 0 }) end";
     }
-    # TOML: marker folding ({{{ / }}})
+    # TOML/YAML: marker folding ({{{ / }}})
     {
       event = [ "FileType" ];
-      pattern = [ "toml" ];
+      pattern = [ "toml" "yaml" ];
       callback.__raw = ''
         function()
           vim.opt_local.foldmethod = "marker"
