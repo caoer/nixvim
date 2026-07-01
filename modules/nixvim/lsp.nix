@@ -122,7 +122,9 @@
       sqls.enable = true;
       statix.enable = true;
       stylelint_lsp = {
-        enable = true;
+        # Disabled — stylelint-lsp depends on pnpm-9.15.9 which has 7 CVEs
+        # (CVE-2026-48995 et al) and is marked insecure in nixpkgs.
+        enable = false;
         config = {
           cmd = [
             (lib.getExe pkgs.stylelint-lsp)
